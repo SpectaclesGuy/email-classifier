@@ -8,10 +8,19 @@ from typing import Dict, List
 
 from app.config import GMAIL_QUERY, GMAIL_USER_ID
 from integrations.gmail_service import get_gmail_service
-from models.predict import predict_email
+from models.transformer_predict import load_default_predictor
 from storage.db import insert_email
 
 _TAG_RE = re.compile(r"<[^>]+>")
+
+_PREDICTOR = None
+
+
+def _get_predictor():
+    global _PREDICTOR
+    if _PREDICTOR is None:
+        _PREDICTOR = load_default_predictor()
+    return _PREDICTOR
 
 
 def _decode_body(data: str) -> str:
@@ -73,7 +82,8 @@ def process_message(message: Dict) -> Dict:
     timestamp = _header_value(headers, "Date")
     body = _extract_body(message.get("payload", {}))
 
-    result = predict_email(subject=subject or "", body=body or "", sender=sender or "")
+    predictor = _get_predictor()
+    result = predictor.predict(subject=subject or "", body=body or "", sender=sender or "")
 
     record = {
         "gmail_id": message.get("id"),
@@ -107,7 +117,7 @@ def poll_gmail_once(query: str) -> int:
             insert_email(record)
             processed += 1
         except FileNotFoundError as exc:
-            logger.error("Model artifact missing: %s", exc)
+            logger.error("Transformer model missing: %s", exc)
             break
         except Exception as exc:
             logger.exception("Failed processing message %s: %s", msg_id, exc)

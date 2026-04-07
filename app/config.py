@@ -3,6 +3,13 @@
 import os
 from pathlib import Path
 
+try:  # pragma: no cover
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except Exception:
+    pass
+
 # Base paths
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = PROJECT_ROOT / "data"
@@ -45,8 +52,18 @@ EMBED_BATCH_SIZE = 64
 GMAIL_USER_ID = os.getenv("GMAIL_USER_ID", "me")
 GMAIL_QUERY = os.getenv("GMAIL_QUERY", "in:inbox")
 GMAIL_POLL_INTERVAL_MINUTES = int(os.getenv("GMAIL_POLL_INTERVAL_MINUTES", "30"))
-GMAIL_CLIENT_SECRET_PATH = Path(os.getenv("GMAIL_CLIENT_SECRET_PATH", PROJECT_ROOT / "secrets" / "gmail_client_secret.json"))
+GMAIL_CLIENT_SECRET_PATH = Path(
+    os.getenv("GMAIL_CLIENT_SECRET_PATH", PROJECT_ROOT / "secrets" / "gmail_client_secret.json")
+)
 GMAIL_TOKEN_PATH = Path(os.getenv("GMAIL_TOKEN_PATH", PROJECT_ROOT / "secrets" / "gmail_token.json"))
+
+# Transformer inference settings
+TRANSFORMER_BASE_MODEL = os.getenv("TRANSFORMER_BASE_MODEL", "distilbert-base-uncased")
+TRANSFORMER_MODEL_DIR = Path(os.getenv("TRANSFORMER_MODEL_DIR", ARTIFACTS_DIR / "distilbert"))
+TRANSFORMER_CHECKPOINT_PATH = Path(
+    os.getenv("TRANSFORMER_CHECKPOINT_PATH", ARTIFACTS_DIR / "distilbert" / "checkpoints" / "epoch_3.pt")
+)
+TRANSFORMER_MAX_LENGTH = int(os.getenv("TRANSFORMER_MAX_LENGTH", "256"))
 
 # SQLite storage
 SQLITE_DB_PATH = Path(os.getenv("SQLITE_DB_PATH", PROCESSED_DIR / "emails.db"))

@@ -125,6 +125,17 @@ Outputs:
 - Metrics: `models/artifacts/distilbert/metrics.json`
 - Plots: `models/artifacts/distilbert/loss_curve.png`, `models/artifacts/distilbert/accuracy_curve.png`
 
+## Transformer Inference
+Run inference using the fine-tuned transformer:
+```
+python scripts/run_transformer_inference.py
+```
+
+Or use the module directly:
+```
+python models/transformer_predict.py
+```
+
 ## Evaluate Models
 ```
 python models/evaluate.py
